@@ -33,8 +33,11 @@ if __name__ == "__main__":
             self.num_cycles_Slider.valueChanged[int].connect(self.num_cycles_Slider_value_changed)
             self.temporal_freq_doubleSpinbox.valueChanged[float].connect(self.temporal_freq_doubleSpinbox_value_changed)
             self.show_stim_checkBox.stateChanged.connect(self.show_stim_checkBox_state_changed)
-
-
+            self.grating_brightness_doubleSpinBox.valueChanged[float].connect(self.grating_brightness_doubleSpinBox_value_changed)
+            self.grating_angle_doubleSpinBox.valueChanged[float].connect(self.grating_angle_doubleSpinBox_valueChanged)
+            self.contrast_frameflip_interval_spinBox.valueChanged[int].connect(self.contrast_frameflip_interval_spinBox_value_changed)
+            self.percent_low_contrast_spinBox.valueChanged[int].connect(self.percent_low_contrast_spinBox_value_changed)
+            self.percent_high_contrast_spinBox.valueChanged[int].connect(self.percent_high_contrast_spinBox_value_changed)
 
             ### change exposure and gain
             self.exposure_spinBox.valueChanged[int].connect(self.exposure_spinBox_value_changed)
@@ -60,7 +63,7 @@ if __name__ == "__main__":
             # self.ImageItem.setImage(np.random.randint(0,255,(200,200)), autoLevels=False, levels=(0, 255))
         def filepath_pushButton_clicked(self):
             # full_path_to_module = os.path.abspath(QtWidgets.QFileDialog.getOpenFileName()[0])
-            full_path_to_directory = os.path.abspath(QtWidgets.QFileDialog.getExistingDirectory(directory='c:\\Users\\Cox-Resscope\\Desktop\\Abhi')).encode()
+            full_path_to_directory = os.path.abspath(QtWidgets.QFileDialog.getExistingDirectory(directory='c:\\Users\\Abhinav Grama\\Documents\\Abhi')).encode()
             self.shared.save_path_len.value = len(full_path_to_directory)
             self.shared.save_path[:self.shared.save_path_len.value]=full_path_to_directory
             self.file_path_lineEdit.setText(full_path_to_directory.decode())
@@ -81,7 +84,8 @@ if __name__ == "__main__":
             else:
                 self.shared.show_stim.value = 0
         def startStim_pushButton_clicked(self):
-            self.shared.start_exp.value = 1
+            self.shared.start_cam.value = 1
+            self.shared.start_cam1.value = 1
             self.startStim_pushButton.setStyleSheet('QPushButton{background-color: rgb(255, 43, 39);}')
         def temporal_freq_doubleSpinbox_value_changed(self,value):
             self.shared.temporalfreq.value = value
@@ -94,6 +98,25 @@ if __name__ == "__main__":
             self.shared.numframes.value = value
             self.exp_duration_label.setText("Exp duration: %.2f sec"%(self.shared.numframes.value/self.shared.framerate.value))
             # print(self.shared.numframes.value/self.shared.framerate.value)
+        def grating_brightness_doubleSpinBox_value_changed(self,value):
+            self.shared.gratings_brightness.value = value
+            self.shared.gratings_brightness_update_requested.value = 1
+        def grating_angle_doubleSpinBox_valueChanged(self,value):
+            self.shared.gratings_angle.value = value
+
+            self.shared.gratings_angle_update_requested.value = 1
+        def contrast_frameflip_interval_spinBox_value_changed(self,value):
+            self.shared.contrast_frameflip_interval.value = value
+            self.shared.contrast_frameflip_interval_update_requested.value = 1
+
+        def percent_low_contrast_spinBox_value_changed(self,value):
+            self.shared.low_contrast.value = value/100.0
+            self.shared.low_contrast_update_requested.value = 1
+
+        def percent_high_contrast_spinBox_value_changed(self,value):
+            self.shared.high_contrast.value = value/100.0
+            self.shared.high_contrast_update_requested.value = 1
+
         #camera property functions
         def exposure_spinBox_value_changed(self,value):
             self.framerate_label.setText('Frame rate = %.2f Hz'%self.shared.framerate.value)
@@ -113,6 +136,7 @@ if __name__ == "__main__":
             # print(stim_trial_count)
             frame = np.ctypeslib.as_array(self.shared.frame)[:self.shared.frame_len.value]
             frame1 = np.ctypeslib.as_array(self.shared.frame1)[:self.shared.frame_len.value]
+            self.numframes_label.setText("#Frames done: %d"%self.shared.framenum.value)
             if len(frame)>0:
                 frame = frame.reshape((self.shared.frame_height.value,self.shared.frame_width.value)).astype(np.uint8)
                 frame1 = frame1.reshape((self.shared.frame_height.value, self.shared.frame_width.value)).astype(np.uint8)
@@ -121,10 +145,10 @@ if __name__ == "__main__":
                 self.pyqtgraph_image_item.setRect(self.viewRect)
                 self.pyqtgraph_image_item1.setImage(frame1.T, autoLevels=False, autoDownsample=True)
                 self.pyqtgraph_image_item1.setRect(self.viewRect1)
-            self.stim_trial_label.setText('LeftGrating: %d RightGrating: %d Rivalrous: %d'
+            self.stim_trial_label.setText('LeftGrating: %d RightGrating: %d Rivalrous: %d Contrast: %d'
                                           % (stim_trial_count[0], stim_trial_count[1]
-                                             , stim_trial_count[2]))
-            if self.shared.start_exp.value ==0:
+                                             , stim_trial_count[2], stim_trial_count[3]))
+            if self.shared.start_cam.value ==0:
                 self.startStim_pushButton.setStyleSheet('QPushButton{background-color: rgb(43, 255, 39);}')
         #close window
         def closeEvent(self, a0: QtGui.QCloseEvent):

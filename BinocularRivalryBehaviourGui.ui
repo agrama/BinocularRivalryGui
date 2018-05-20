@@ -168,10 +168,10 @@
    <widget class="QGroupBox" name="stim_parameters_groupBox">
     <property name="geometry">
      <rect>
-      <x>910</x>
-      <y>400</y>
+      <x>900</x>
+      <y>320</y>
       <width>381</width>
-      <height>281</height>
+      <height>521</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -184,7 +184,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>170</y>
+       <y>460</y>
        <width>71</width>
        <height>16</height>
       </rect>
@@ -235,18 +235,23 @@
        <string>Rivalrous</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>Contrast</string>
+      </property>
+     </item>
     </widget>
     <widget class="QLabel" name="stim_trial_label">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>190</y>
+       <y>480</y>
        <width>311</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>LeftGrating: 0 RightGrating: 0 Rivalrous: 0</string>
+      <string>LeftGrating: 0 RightGrating: 0 Rivalrous: 0 Contrast: 0</string>
      </property>
     </widget>
     <widget class="QSpinBox" name="numframes_spinBox">
@@ -304,13 +309,16 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>250</y>
        <width>160</width>
        <height>22</height>
       </rect>
      </property>
      <property name="minimum">
-      <number>1</number>
+      <number>2</number>
+     </property>
+     <property name="singleStep">
+      <number>2</number>
      </property>
      <property name="value">
       <number>2</number>
@@ -322,11 +330,14 @@
     <widget class="QDoubleSpinBox" name="temporal_freq_doubleSpinbox">
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>120</y>
+       <x>20</x>
+       <y>180</y>
        <width>62</width>
        <height>22</height>
       </rect>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
      </property>
      <property name="value">
       <double>2.000000000000000</double>
@@ -336,7 +347,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>100</y>
+       <y>220</y>
        <width>111</width>
        <height>16</height>
       </rect>
@@ -348,8 +359,8 @@
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>100</y>
+       <x>20</x>
+       <y>160</y>
        <width>81</width>
        <height>16</height>
       </rect>
@@ -361,8 +372,8 @@
     <widget class="QCheckBox" name="show_stim_checkBox">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>230</y>
+       <x>240</x>
+       <y>180</y>
        <width>121</width>
        <height>17</height>
       </rect>
@@ -376,6 +387,213 @@
      </property>
      <property name="text">
       <string>Show Stim</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="numframes_label">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>80</y>
+       <width>151</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>#Frames done: </string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="grating_brightness_doubleSpinBox">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>250</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <double>0.100000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>230</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Grating Brightness</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="grating_angle_doubleSpinBox">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>180</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <double>-90.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>90.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.500000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>160</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Grating Angle</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>281</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Gratings Parameters</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>340</y>
+       <width>251</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Contrast Stim Parameters</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="contrast_frameflip_interval_spinBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>390</y>
+       <width>71</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>50</number>
+     </property>
+     <property name="maximum">
+      <number>1000</number>
+     </property>
+     <property name="singleStep">
+      <number>50</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>370</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string># frames to flip</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="percent_low_contrast_spinBox">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>390</y>
+       <width>71</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="singleStep">
+      <number>5</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>370</y>
+       <width>71</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>% low contrast</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="percent_high_contrast_spinBox">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>390</y>
+       <width>71</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>50</number>
+     </property>
+     <property name="singleStep">
+      <number>5</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>370</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>% high contrast</string>
      </property>
     </widget>
    </widget>
@@ -536,6 +754,9 @@
     </property>
     <property name="singleStep">
      <number>100</number>
+    </property>
+    <property name="value">
+     <number>20000</number>
     </property>
    </widget>
   </widget>

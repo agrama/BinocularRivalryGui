@@ -106,7 +106,7 @@ class MyApp(ShowBase):
         self.pulsetimer += 0.0167# time in ms of a frame
         self.cardnode.setShaderInput("pulse",self.pulse)
     def frameFlipper(self, task):
-        if self.pulsetimer > 0.250:
+        if self.pulsetimer > 0.50:
             self.pulsetimer = 0
             self.pulse = 0
             self.cardnode.setShaderInput("pulse", self.pulse)

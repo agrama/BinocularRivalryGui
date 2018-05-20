@@ -54,7 +54,7 @@ my_shader = [
           //if (pow((texcoord.x - x_pos)*aspect_ratio,2) + pow((texcoord.y - y_pos),2) > gabor_radius ){
             //            color0 = vec4(0.5,0.5,0.5,1);
               //          }
-          vec4 color0 = vec4(0.2*(sign(sin(texcoord_rotated1.x*2*3.14*cycles + phi))+1)/2, 0.2*(sign(sin(texcoord_rotated2.x*2*3.14*cycles - phi+ (3.14/10)))+1)/2, 0, 1);
+          vec4 color0 = vec4(0.2*(sign(sin(texcoord_rotated1.x*2*3.14*(cycles+3) + phi))+1)/2, 0.2*(sign(sin(texcoord_rotated2.x*2*3.14*cycles - phi+ (3.14/10)))+1)/2, 0, 1);
           gl_FragColor = color0;
        }
     """
@@ -118,7 +118,7 @@ class MyApp(ShowBase):
         self.cardnode.setShaderInput("y_pos", 0.5)
         self.cardnode.setShaderInput("phi", 0)
         self.cardnode.setShaderInput("rot_angle", 0)
-        self.cardnode.setShaderInput("rot_angle_increment", 0)
+        self.cardnode.setShaderInput("rot_angle_increment", np.pi/100)
         self.setBackgroundColor(0.5, 0.5, 0.5)
         self.taskMgr.add(self.frameFlipper, "frameFlipper")
 
