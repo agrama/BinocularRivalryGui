@@ -6,6 +6,8 @@ from direct.task import Task
 from direct.gui.DirectGui import *
 import numpy as np
 import sys
+import random as rn
+import os
 
 my_shader = [
     """#version 140
@@ -24,41 +26,48 @@ my_shader = [
     """#version 140
 
         uniform sampler2D p3d_Texture0;
+        uniform sampler2D p3d_Texture1;
         in vec2 texcoord;
         out vec4 gl_FragColor;
+        uniform float phase1;
+        uniform float phase2;
+        float aspect_ratio = 1.56;
         uniform float rot_angle;
         uniform float phi;
         uniform float x_scale;
         uniform float y_scale;
         uniform float rot_angle_increment;
-
-        uniform float x_pos;
-        uniform float y_pos;
-        uniform float aspect_ratio;
         uniform float cycles;
+        uniform float gratings_brightness;
+        uniform float low_contrast;
+        uniform float high_contrast;
         uniform float mask_radius;
+        uniform float pulse;
+
 
         void main() {
 
-        mat2 rotation1 = mat2( cos(rot_angle-rot_angle_increment), sin(rot_angle-rot_angle_increment),
+          mat2 rotation1 = mat2( cos(rot_angle-rot_angle_increment), sin(rot_angle-rot_angle_increment),
                       -sin(rot_angle-rot_angle_increment), cos(rot_angle-rot_angle_increment));
           mat2 rotation2 = mat2( cos(rot_angle+rot_angle_increment), sin(rot_angle+rot_angle_increment),
                       -sin(rot_angle+rot_angle_increment), cos(rot_angle+rot_angle_increment));
-
-
           vec2 texcoord_scaled = vec2(texcoord.x * x_scale, texcoord.y * y_scale);
           vec2 texcoord_rotated1 = rotation1*texcoord_scaled.xy;
           vec2 texcoord_rotated2 = rotation2*texcoord_scaled.xy;
-          
+          vec4 color0 = texture(p3d_Texture0, texcoord);
+          vec4 color1 = texture(p3d_Texture1, texcoord);
           if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
-          //this presents left eye down and right eye up
-            //gl_FragColor = vec4(0.2*(sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi))+1)/2, 0.2*(sign(sin(texcoord_rotated2.x*2*3.14*cycles + phi+ (3.14/10)))+1)/2, 0, 1);
-          //this presents left eye right and right eye left  
-            gl_FragColor = vec4(0.2*(sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi))+1)/2, 0.2*(sign(sin(texcoord_rotated2.x*2*3.14*cycles - phi+ (3.14/10)))+1)/2, 0, 1);
-           }
+            if(pulse == 1){
+            gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1)) + gratings_brightness, low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, 0, 1);
+            }
+            else{
+            gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1))+ gratings_brightness, gratings_brightness, 0, 1);
+            }
+          }
           else{
-            gl_FragColor = vec4(0.2,0.2,0,1);
-          } 
+          gl_FragColor = vec4(0,0,0,1);
+          }
+          //  low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) +
        }
     """
 ]
@@ -79,13 +88,11 @@ class MyApp(ShowBase):
         ShowBase.__init__(self)
         self.disableMouse()
         self.accept('escape', sys.exit)
-        self.accept('arrow_right', self.SpatialfrequencyIncrease)
-        self.accept('arrow_left', self.SpatialfrequencyDecrease)
-        self.accept('arrow_up', self.TemporalfrequencyIncrease)
-        self.accept('arrow_down', self.TemporalfrequencyDecrease)
-        self.accept('a',self.IncreaseMaskRadius)
+        self.accept('a', self.IncreaseMaskRadius)
         self.accept('s', self.DecreaseMaskRadius)
 
+
+        self.accept('arrow_down', self.Pulser)
         x = np.linspace(0, 2 * np.pi, 100)
         y = (np.sign(np.sin(x)) + 1) / 2 * 255
 
@@ -94,6 +101,8 @@ class MyApp(ShowBase):
 
         self.tex.setup2dTexture(100, 1, Texture.TUnsignedByte, Texture.FLuminance)
         memoryview(self.tex.modify_ram_image())[:] = y.astype(np.uint8).tobytes()
+        ts0 = TextureStage("mapping texture stage0")
+        ts0.setSort(0)
 
         cm = CardMaker('card')
 
@@ -106,58 +115,60 @@ class MyApp(ShowBase):
 
         self.cardnode.setPos(-0.5, 0.5, -0.5)
 
-        self.cardnode.setTexture(self.tex)
+        self.cardnode.setTexture(ts0, self.tex)
 
         self.my_shader = Shader.make(Shader.SLGLSL, my_shader[0], my_shader[1])
 
         self.cardnode.setShader(self.my_shader)
-        # self.cardnode.hide()
         self.scale = 1
-        self.cycles = 5
-        self.temporal_frequency = 1
-        self.mask_radius = 0.9
+        self.cycles = 15
+        self.gratings_brightness = 0.3
+        self.mask_radius = 0.2
+        # self.cardnode.hide()
         self.cardnode.setShaderInput("x_scale", self.scale * 1.56)  # this is the measured aspect ratio of the projector
-        self.cardnode.setShaderInput("aspect_ratio", 1.56)
         self.cardnode.setShaderInput("y_scale", self.scale)
         self.cardnode.setShaderInput("cycles", self.cycles)
-        self.cardnode.setShaderInput("x_pos", 0.5)
-        self.cardnode.setShaderInput("y_pos", 0.5)
-        self.cardnode.setShaderInput("phi", 0)
         self.cardnode.setShaderInput("rot_angle", 0)
-        self.cardnode.setShaderInput("rot_angle_increment", np.deg2rad(10))
-        self.cardnode.setShaderInput("mask_radius",self.mask_radius)
-        self.setBackgroundColor(0.5, 0.5, 0.5)
+        self.cardnode.setShaderInput("rot_angle_increment", np.deg2rad(20))
+        self.cardnode.setShaderInput("gratings_brightness", self.gratings_brightness)
+        self.cardnode.setShaderInput("low_contrast", 0.2)
+        self.cardnode.setShaderInput("high_contrast", 0.9)
+        self.cardnode.setShaderInput("stimcode", 1)
+        self.cardnode.setShaderInput("mask_radius", self.mask_radius)
+        self.pulse = 0
+        self.pulsetimer = 0
+        self.cardnode.setShaderInput('pulse',self.pulse)
+
+        self.setBackgroundColor(self.gratings_brightness, self.gratings_brightness, 0)
         self.taskMgr.add(self.frameFlipper, "frameFlipper")
+        self.phase1 = 0
+        self.phase2 = 0
+        self.cardnode.setShaderInput('phase1', self.phase1)
+        self.cardnode.setShaderInput('phase2', self.phase2)
+
+    def Pulser(self):
+        print("pulse")
+        self.pulse = 1
+        self.pulsetimer += 0.0167  # time in ms of a frame
+        self.cardnode.setShaderInput("pulse", self.pulse)
 
     def IncreaseMaskRadius(self):
         self.mask_radius += 0.02
         self.cardnode.setShaderInput("mask_radius", self.mask_radius)
+
     def DecreaseMaskRadius(self):
         self.mask_radius -= 0.02
         self.cardnode.setShaderInput("mask_radius", self.mask_radius)
 
-    def SpatialfrequencyIncrease(self):
-        self.cycles += 1
-        self.cardnode.setShaderInput("cycles", self.cycles)
-        print(self.cycles)
-
-    def SpatialfrequencyDecrease(self):
-        self.cycles -= 1
-        self.cardnode.setShaderInput("cycles", self.cycles)
-        print(self.cycles)
-
-    def TemporalfrequencyIncrease(self):
-        self.temporal_frequency += 0.05
-        print(self.temporal_frequency)
-
-    def TemporalfrequencyDecrease(self):
-        self.temporal_frequency -= 0.05
-        print(self.temporal_frequency)
-
     def frameFlipper(self, task):
-        # self.cardnode.setShaderInput("cycles",self.cycles)
-        self.cardnode.setShaderInput("phi", task.time * 2 * np.pi * self.temporal_frequency)
-        # self.cardnode.show()
+        if self.pulsetimer > 0:
+            self.pulsetimer += 0.0167
+        if self.pulsetimer > 4:
+            self.pulsetimer = 0
+            self.pulse = 0
+            self.cardnode.setShaderInput("pulse", self.pulse)
+
+
         return task.cont
 
 

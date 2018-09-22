@@ -12,6 +12,16 @@ if __name__ == "__main__":
     import numpy as np
     import pickle
 
+    sys._excepthook = sys.excepthook
+
+
+    def exception_hook(exctype, value, traceback):
+        sys._excepthook(exctype, value, traceback)
+        sys.exit(1)
+
+
+    sys.excepthook = exception_hook
+
     class Main_Window(QtWidgets.QMainWindow):
         def __init__(self):
             super().__init__()
@@ -32,12 +42,14 @@ if __name__ == "__main__":
             self.numframes_spinBox.valueChanged[int].connect(self.numframes_spinBox_value_changed)
             self.num_cycles_Slider.valueChanged[int].connect(self.num_cycles_Slider_value_changed)
             self.temporal_freq_doubleSpinbox.valueChanged[float].connect(self.temporal_freq_doubleSpinbox_value_changed)
+            self.mask_radius_doubleSpinBox.valueChanged[float].connect(self.mask_radius_doubleSpinBox_valueChanged)
             self.show_stim_checkBox.stateChanged.connect(self.show_stim_checkBox_state_changed)
             self.grating_brightness_doubleSpinBox.valueChanged[float].connect(self.grating_brightness_doubleSpinBox_value_changed)
             self.grating_angle_doubleSpinBox.valueChanged[float].connect(self.grating_angle_doubleSpinBox_valueChanged)
             self.contrast_frameflip_interval_spinBox.valueChanged[int].connect(self.contrast_frameflip_interval_spinBox_value_changed)
             self.percent_low_contrast_spinBox.valueChanged[int].connect(self.percent_low_contrast_spinBox_value_changed)
             self.percent_high_contrast_spinBox.valueChanged[int].connect(self.percent_high_contrast_spinBox_value_changed)
+            self.phase_change_spinBox.valueChanged[int].connect(self.phase_change_spinbox_value_changed)
 
             ### change exposure and gain
             self.exposure_spinBox.valueChanged[int].connect(self.exposure_spinBox_value_changed)
@@ -94,6 +106,9 @@ if __name__ == "__main__":
             self.shared.numcycles.value = value
             self.gratings_cycles_label.setText("#Cycles in grating: %d"%value)
             self.shared.numcycles_update_requested.value = 1
+        def mask_radius_doubleSpinBox_valueChanged(self,value):
+            self.shared.mask_radius.value = value
+            self.shared.mask_radius_update_requested.value = 1
         def numframes_spinBox_value_changed(self,value):
             self.shared.numframes.value = value
             self.exp_duration_label.setText("Exp duration: %.2f sec"%(self.shared.numframes.value/self.shared.framerate.value))
@@ -116,6 +131,9 @@ if __name__ == "__main__":
         def percent_high_contrast_spinBox_value_changed(self,value):
             self.shared.high_contrast.value = value/100.0
             self.shared.high_contrast_update_requested.value = 1
+        def phase_change_spinbox_value_changed(self,value):
+            self.shared.phase_change.value = value
+            self.shared.phase_change_update_requested.value = 1
 
         #camera property functions
         def exposure_spinBox_value_changed(self,value):
@@ -145,9 +163,9 @@ if __name__ == "__main__":
                 self.pyqtgraph_image_item.setRect(self.viewRect)
                 self.pyqtgraph_image_item1.setImage(frame1.T, autoLevels=False, autoDownsample=True)
                 self.pyqtgraph_image_item1.setRect(self.viewRect1)
-            self.stim_trial_label.setText('LeftGrating: %d RightGrating: %d Rivalrous: %d Contrast: %d'
-                                          % (stim_trial_count[0], stim_trial_count[1]
-                                             , stim_trial_count[2], stim_trial_count[3]))
+            self.stim_trial_label.setText('LeftGrating: %d RightGrating: %d Rival_LR: %d Rival_UD: %d ContrCoherent: %d  ContrRivalHigh&LowFlickr: %d ContrRivalNoFlickr: %d LowContrFlickr: %d HighContrFlickr: %d LowContrCoherent: %d HighContrCoherent: %d FlashSuppLow: %d FlashSuppHigh: %d'
+                                          % (stim_trial_count[0]-1, stim_trial_count[1]-1
+                                             , stim_trial_count[2]-1, stim_trial_count[3]-1, stim_trial_count[4]-1, stim_trial_count[5]-1, stim_trial_count[6]-1, stim_trial_count[7]-1, stim_trial_count[8]-1, stim_trial_count[9]-1, stim_trial_count[10]-1, stim_trial_count[11]-1, stim_trial_count[12]-1))
             if self.shared.start_cam.value ==0:
                 self.startStim_pushButton.setStyleSheet('QPushButton{background-color: rgb(43, 255, 39);}')
         #close window

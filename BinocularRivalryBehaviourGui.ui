@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1301</width>
-    <height>923</height>
+    <width>1373</width>
+    <height>931</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -170,7 +170,7 @@
      <rect>
       <x>900</x>
       <y>320</y>
-      <width>381</width>
+      <width>451</width>
       <height>521</height>
      </rect>
     </property>
@@ -180,19 +180,6 @@
     <property name="title">
      <string>Stim Parameters</string>
     </property>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>460</y>
-       <width>71</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string># Trials done</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
@@ -211,7 +198,7 @@
       <rect>
        <x>20</x>
        <y>50</y>
-       <width>69</width>
+       <width>211</width>
        <height>22</height>
       </rect>
      </property>
@@ -232,32 +219,64 @@
      </item>
      <item>
       <property name="text">
-       <string>Rivalrous</string>
+       <string>RivalrousLeftRightMovingGrating</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Contrast</string>
+       <string>RivalrousUpDownMovingGrating</string>
       </property>
      </item>
-    </widget>
-    <widget class="QLabel" name="stim_trial_label">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>480</y>
-       <width>311</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>LeftGrating: 0 RightGrating: 0 Rivalrous: 0 Contrast: 0</string>
-     </property>
+     <item>
+      <property name="text">
+       <string>ContrastCoherent</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ContrastRivalrousHighandLowFlicker</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ContrastRivalrousNoFlicker</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>LowContrastFlicker</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>HighContrastFlicker</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>LowContrastCoherent</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>HighContrastCoherent</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>FlashSuppLowFlash</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>FlashSuppHighFlash</string>
+      </property>
+     </item>
     </widget>
     <widget class="QSpinBox" name="numframes_spinBox">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>240</x>
        <y>50</y>
        <width>91</width>
        <height>22</height>
@@ -279,7 +298,7 @@
     <widget class="QLabel" name="wait_frames_label">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>240</x>
        <y>30</y>
        <width>61</width>
        <height>16</height>
@@ -295,7 +314,7 @@
     <widget class="QLabel" name="exp_duration_label">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>340</x>
        <y>50</y>
        <width>161</width>
        <height>16</height>
@@ -372,7 +391,7 @@
     <widget class="QCheckBox" name="show_stim_checkBox">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>300</x>
        <y>180</y>
        <width>121</width>
        <height>17</height>
@@ -392,7 +411,7 @@
     <widget class="QLabel" name="numframes_label">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>330</x>
        <y>80</y>
        <width>151</width>
        <height>16</height>
@@ -553,6 +572,9 @@
      <property name="singleStep">
       <number>5</number>
      </property>
+     <property name="value">
+      <number>10</number>
+     </property>
     </widget>
     <widget class="QLabel" name="label_9">
      <property name="geometry">
@@ -594,6 +616,70 @@
      </property>
      <property name="text">
       <string>% high contrast</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="mask_radius_doubleSpinBox">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>180</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <double>0.980000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.020000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.300000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>160</y>
+       <width>61</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Mask Radius</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="phase_change_spinBox">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>390</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>180</number>
+     </property>
+     <property name="singleStep">
+      <number>5</number>
+     </property>
+     <property name="value">
+      <number>90</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>370</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>grating phase shift</string>
      </property>
     </widget>
    </widget>
@@ -759,13 +845,39 @@
      <number>20000</number>
     </property>
    </widget>
+   <widget class="QLabel" name="stim_trial_label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>790</y>
+      <width>1201</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LeftGrating: 0 RightGrating: 0 Rival_LR: 0 Rival_UD: 0 ContrCoherent: 0  ContrRivalHigh&amp;LowFlickr: 0 ContrRivalNoFlickr: 0 LowContrFlickr: 0 HighContrFlickr: 0 LowContrCoherent: 0 HighContrCoherent: 0 FlashSuppLow: 0 FlashSuppHigh: 0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>770</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string># Trials done</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1301</width>
+     <width>1373</width>
      <height>21</height>
     </rect>
    </property>

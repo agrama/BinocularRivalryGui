@@ -25,10 +25,14 @@ class CameraModule1(Process):
         camera1.properties['Gain'] = 1
         camera1.properties['BinningVertical'] = 4
         camera1.properties['BinningHorizontal'] = 4
-        camera1.properties['ExposureTime'] = 10000
+        camera1.properties['ExposureTime'] = 20000
 
-
-        stim_dict = {'LeftGrating':0,'RightGrating':1,'Rivalrous':2,'Contrast':3} # for accessing trial number from shared variable
+        stim_dict = {'LeftGrating': 0, 'RightGrating': 1, 'RivalrousLeftRightMovingGrating': 2,
+                     'RivalrousUpDownMovingGrating': 3,
+                     'ContrastCoherent': 4, 'ContrastRivalrousHighandLowFlicker': 5, 'ContrastRivalrousNoFlicker': 6,
+                     'LowContrastFlicker': 7, 'HighContrastFlicker': 8, 'LowContrastCoherent': 9,
+                     'HighContrastCoherent': 10, 'FlashSuppLowFlash': 11,
+                     'FlashSuppHighFlash': 12}  # for accessing trial number from shared variable
         camera1_generator = camera1.grab_images(-1)
         # first_time = time.time()
         while self.shared.main_program_still_running.value == 1:
@@ -51,9 +55,9 @@ class CameraModule1(Process):
                 stim_trial_count = np.ctypeslib.as_array(self.shared.stim_trial_count)
 
                 path_to_file1 = os.path.join(bytearray(self.shared.save_path[:self.shared.save_path_len.value]).decode(),
-                           stim_type+ '_trial_' + str(stim_trial_count[stim_dict[stim_type]]+1) +'_cycles_'+ str(self.shared.numcycles.value)+ '_freq_'+str(self.shared.temporalfreq.value)+'_rot_'+str(self.shared.gratings_angle.value)+'_brightness_' + str(
+                           stim_type+ '_trial_' + str(stim_trial_count[stim_dict[stim_type]]) +'_cycles_'+ str(self.shared.numcycles.value)+ '_freq_'+str(self.shared.temporalfreq.value)+'_rot_'+str(self.shared.gratings_angle.value)+'_brightness_' + str(
                                                 round(self.shared.gratings_brightness.value,2))+'_lowcontrast_' + str(
-                                                round(self.shared.low_contrast.value,2)) + '_highcontrast_' + str(round(self.shared.high_contrast.value,2))+ '_lefteye.tif')
+                                                round(self.shared.low_contrast.value,2)) + '_highcontrast_' + str(round(self.shared.high_contrast.value,2)) + '_maskrad_' + str(round(self.shared.mask_radius.value,2)) +'_lefteye.tif')
                 print(path_to_file1)
                 tif1 = tiff.TiffWriter(path_to_file1, append=True, imagej=True)
                 # first_time=time.time()

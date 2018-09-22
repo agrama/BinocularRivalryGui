@@ -31,7 +31,7 @@ my_shader = [
         out vec4 gl_FragColor;
         uniform float pulse;
         float aspect_ratio = 1.56;
-        uniform float cycles;
+        uniform float cycles; 
 
         void main() {
           vec4 color0 = texture(p3d_Texture0, texcoord);
