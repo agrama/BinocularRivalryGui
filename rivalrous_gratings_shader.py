@@ -64,7 +64,7 @@ my_shader = [
           
           if(stimcode == 0){
             if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
-                gl_FragColor = vec4(gratings_brightness*(sign(sin(texcoord_rotated2.x*2*3.14*cycles - phi))+1)/2, gratings_brightness*(sign(sin(texcoord_rotated2.x*2*3.14*cycles - phi+ (3.14/10)))+1)/2, 0, 1);
+                gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
              }
             else{
                 gl_FragColor = vec4(0.1*gratings_brightness,0.1*gratings_brightness,0,1);
@@ -72,7 +72,7 @@ my_shader = [
             }
           if(stimcode == 1){
             if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
-                gl_FragColor = vec4(gratings_brightness*(sign(sin(texcoord_rotated1.x*2*3.14*cycles + phi))+1)/2, gratings_brightness*(sign(sin(texcoord_rotated1.x*2*3.14*cycles + phi+ (3.14/10)))+1)/2, 0, 1);
+                gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, 0, 1);
              }
             else{
                 gl_FragColor = vec4(0.1*gratings_brightness,0.1*gratings_brightness,0,1);
@@ -81,7 +81,7 @@ my_shader = [
           if(stimcode == 2){
           //this presents left eye right and right eye left
             if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
-                gl_FragColor = vec4(gratings_brightness*(sign(sin(texcoord_rotated1.x*2*3.14*cycles + phi))+1)/2, gratings_brightness*(sign(sin(texcoord_rotated2.x*2*3.14*cycles - phi+ (3.14/10)))+1)/2, 0, 1);
+                gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
              }
             else{
                 gl_FragColor = vec4(0.1*gratings_brightness,0.1*gratings_brightness,0,1);
@@ -188,7 +188,37 @@ my_shader = [
             else{
                 gl_FragColor = vec4(gratings_brightness,gratings_brightness,0,1);
              }
-          }  
+          }
+          // for Flash suppression effect where left moving grating is flashed in the right eye
+          if(stimcode == 12){
+            if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
+                if(flash_flag == 1){
+                    gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
+                    }
+                else{
+                    gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness, 0, 1);
+                }
+             }
+            else{
+                gl_FragColor = vec4(0.1*gratings_brightness,0.1*gratings_brightness,0,1);
+             }
+            
+          }
+          // for Flash suppression effect where right moving grating is flashed in the left eye
+          if(stimcode == 13){
+            if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
+                if(flash_flag == 1){
+                    gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
+                    }
+                else{
+                    gl_FragColor = vec4(gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
+                }
+             }
+            else{
+                gl_FragColor = vec4(0.1*gratings_brightness,0.1*gratings_brightness,0,1);
+             }
+            
+          }    
        }
     """
 ]

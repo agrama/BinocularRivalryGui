@@ -25,7 +25,7 @@ class Shared():
         self.stim_type = sharedctypes.RawArray(ctypes.c_ubyte,500)
         self.stim_type_len = Value('i',0)
         self.stim_type_update_requested = Value('b',0)
-        self.stim_trial_count = sharedctypes.RawArray(ctypes.c_ubyte,13)
+        self.stim_trial_count = sharedctypes.RawArray(ctypes.c_ubyte,15)
         self.numframes = Value('i',50)
         self.inter_stim_frame_interval = Value('i', 100)
         self.numcycles = Value('i',4)

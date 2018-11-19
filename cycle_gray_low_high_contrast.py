@@ -98,7 +98,6 @@ class MyApp(ShowBase):
         self.accept('c',self.setLow)
         self.accept('v',self.increase_brightness)
         self.accept('b',self.decrease_brightness)
-        self.accept('arrow_down', self.Pulser)
         x = np.linspace(0, 2 * np.pi, 100)
         y = (np.sign(np.sin(x)) + 1) / 2 * 255
 
@@ -138,7 +137,7 @@ class MyApp(ShowBase):
         self.cardnode.setShaderInput("rot_angle_increment", np.deg2rad(20))
         self.cardnode.setShaderInput("gratings_brightness", self.gratings_brightness)
         self.cardnode.setShaderInput("low_contrast", 0.2)
-        self.cardnode.setShaderInput("high_contrast", 0.9)
+        self.cardnode.setShaderInput("high_contrast", 1)
         self.cardnode.setShaderInput("stimcode", 1)
         self.cardnode.setShaderInput("mask_radius", self.mask_radius)
         self.pulse = 0
@@ -152,11 +151,7 @@ class MyApp(ShowBase):
         self.cardnode.setShaderInput('phase1', self.phase1)
         self.cardnode.setShaderInput('phase2', self.phase2)
 
-    def Pulser(self):
-        print("pulse")
-        self.pulse = 1
-        self.pulsetimer += 0.0167  # time in ms of a frame
-        self.cardnode.setShaderInput("pulse", self.pulse)
+
 
     def IncreaseMaskRadius(self):
         self.mask_radius += 0.02

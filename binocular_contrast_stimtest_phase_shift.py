@@ -80,10 +80,10 @@ class MyApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         self.disableMouse()
+
         self.accept('escape', sys.exit)
         self.accept('a', self.IncreaseMaskRadius)
         self.accept('s', self.DecreaseMaskRadius)
-
         self.accept('arrow_down', self.Pulser)
         x = np.linspace(0, 2 * np.pi, 100)
         y = (np.sign(np.sin(x)) + 1) / 2 * 255

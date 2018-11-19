@@ -78,6 +78,7 @@ class MyApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         self.disableMouse()
+
         self.accept('escape', sys.exit)
         self.accept('arrow_right', self.SpatialfrequencyIncrease)
         self.accept('arrow_left', self.SpatialfrequencyDecrease)

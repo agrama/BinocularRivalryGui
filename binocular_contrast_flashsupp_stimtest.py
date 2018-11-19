@@ -61,13 +61,13 @@ my_shader = [
             gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1)) + gratings_brightness, low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, 0, 1);
             }
             else{
-            gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1))+ gratings_brightness, gratings_brightness, 0, 1);
+            gl_FragColor = vec4(gratings_brightness,low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, 0, 1);
             }
           }
           else{
           gl_FragColor = vec4(0,0,0,1);
           }
-          //  low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) +
+          //  high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1))+ 
        }
     """
 ]
@@ -87,12 +87,12 @@ class MyApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         self.disableMouse()
+
         self.accept('escape', sys.exit)
         self.accept('a', self.IncreaseMaskRadius)
         self.accept('s', self.DecreaseMaskRadius)
-
-
         self.accept('arrow_down', self.Pulser)
+
         x = np.linspace(0, 2 * np.pi, 100)
         y = (np.sign(np.sin(x)) + 1) / 2 * 255
 

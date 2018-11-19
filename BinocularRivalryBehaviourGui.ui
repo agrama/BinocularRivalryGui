@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>test.jpg</normaloff>test.jpg</iconset>
+    <normaloff>BinocularRivalryGui/test.jpg</normaloff>BinocularRivalryGui/test.jpg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="filepath_pushButton">
@@ -270,6 +270,16 @@
      <item>
       <property name="text">
        <string>FlashSuppHighFlash</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>FlashSuppLeftGrating</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>FlashSuppRightGrating</string>
       </property>
      </item>
     </widget>
@@ -851,11 +861,11 @@
       <x>20</x>
       <y>790</y>
       <width>1201</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>LeftGrating: 0 RightGrating: 0 Rival_LR: 0 Rival_UD: 0 ContrCoherent: 0  ContrRivalHigh&amp;LowFlickr: 0 ContrRivalNoFlickr: 0 LowContrFlickr: 0 HighContrFlickr: 0 LowContrCoherent: 0 HighContrCoherent: 0 FlashSuppLow: 0 FlashSuppHigh: 0</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">

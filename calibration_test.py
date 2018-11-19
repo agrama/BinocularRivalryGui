@@ -31,7 +31,7 @@ my_shader = [
         uniform float brightness;
 
         void main() {
-          gl_FragColor = vec4(brightness,0a,0,1);
+          gl_FragColor = vec4(brightness,0,0,1);
           
            
        }
@@ -89,12 +89,12 @@ class MyApp(ShowBase):
         self.cardnode.setShaderInput("brightness", self.brightness)
 
     def IncreaseBrightness(self):
-        self.brightness += 0.05
+        self.brightness += 0.1
         self.cardnode.setShaderInput("brightness", self.brightness)
         print(self.brightness)
 
     def DecreaseBrightness(self):
-        self.brightness -= 0.05
+        self.brightness -= 0.1
         self.cardnode.setShaderInput("brightness", self.brightness)
         print(self.brightness)
 

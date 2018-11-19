@@ -16,7 +16,7 @@ class StimulusModule(Process):
     def run(self):
 
         self.myapp = MyApp(self.shared)
-        stim_trial_count = np.ones((13,1),dtype=np.uint)
+        stim_trial_count = np.ones((15,1),dtype=np.uint)
         self.shared.stim_trial_count[:len(stim_trial_count)] = stim_trial_count.flatten()
 
         while self.shared.main_program_still_running.value == 1:
@@ -171,11 +171,13 @@ class StimulusModule(Process):
                             self.data_to_save.append({'framenum':self.shared.framenum.value,'grating_id':'low'})
                             self.myapp.cardnode.setShaderInput("stimcode",3)
                             self.myapp.taskMgr.step()
+                            time.sleep(0.041)
                         if (self.shared.framenum.value+self.shared.contrast_frameflip_interval.value)%(2*self.shared.contrast_frameflip_interval.value) <= 1:
                             print(self.shared.framenum.value, 'high contrast')
                             self.data_to_save.append({'framenum': self.shared.framenum.value, 'grating_id': 'high'})
                             self.myapp.cardnode.setShaderInput("stimcode",4)
                             self.myapp.taskMgr.step()
+                            time.sleep(0.041)
                         self.myapp.taskMgr.step()
                     path_to_file = os.path.join(
                         bytearray(self.shared.save_path[:self.shared.save_path_len.value]).decode(),
@@ -213,6 +215,7 @@ class StimulusModule(Process):
                             self.myapp.phase_low = np.mod(self.myapp.phase_low, np.deg2rad(360))
                             self.myapp.cardnode.setShaderInput('phase_low', self.myapp.phase_low)
                             self.myapp.taskMgr.step()
+                            time.sleep(0.041)
 
                         if (self.shared.framenum.value + self.shared.contrast_frameflip_interval.value) % (
                                 2 * self.shared.contrast_frameflip_interval.value) <= 1:
@@ -225,6 +228,7 @@ class StimulusModule(Process):
                             self.myapp.phase_high = np.mod(self.myapp.phase_high, np.deg2rad(360))
                             self.myapp.cardnode.setShaderInput('phase_high', self.myapp.phase_high)
                             self.myapp.taskMgr.step()
+                            time.sleep(0.041)
                         self.myapp.cardnode.setShaderInput('phase_low', self.myapp.phase_low)
                         self.myapp.cardnode.setShaderInput('phase_high', self.myapp.phase_high)
                         self.myapp.taskMgr.step()
@@ -263,6 +267,7 @@ class StimulusModule(Process):
                             self.myapp.phase_low = np.mod(self.myapp.phase_low, np.deg2rad(360))
                             self.myapp.cardnode.setShaderInput('phase_low', self.myapp.phase_low)
                             self.myapp.taskMgr.step()
+                            time.sleep(0.002)
                         self.myapp.taskMgr.step()
                     path_to_file = os.path.join(
                         bytearray(self.shared.save_path[:self.shared.save_path_len.value]).decode(),
@@ -291,6 +296,7 @@ class StimulusModule(Process):
                             self.myapp.phase_high = np.mod(self.myapp.phase_high, np.deg2rad(360))
                             self.myapp.cardnode.setShaderInput('phase_high', self.myapp.phase_high)
                             self.myapp.taskMgr.step()
+                            time.sleep(0.002)
                         self.myapp.taskMgr.step()
                     path_to_file = os.path.join(
                         bytearray(self.shared.save_path[:self.shared.save_path_len.value]).decode(),
@@ -399,6 +405,117 @@ class StimulusModule(Process):
                             round(self.shared.high_contrast.value, 2)) + '.p')
                     pickle.dump(self.data_to_save, open(path_to_file.encode("ISO-8859-1"), 'wb'))
                     stim_trial_count[12] += 1
+                    self.shared.stim_trial_count[:len(stim_trial_count)] = stim_trial_count.flatten()
+                elif self.stimcode == 'FlashSuppLeftGrating':
+                    # this will flash a left moving grating in the right eye, while the left eye always sees a right moving grating
+                    self.myapp.cardnode.setShaderInput("stimcode", 12)
+                    self.myapp.cardnode.setShaderInput("flash_flag", 0)
+                    self.data_to_save = []
+                    self.stim_start_time = time.time()
+                    self.last_time = time.time()
+                    self.myapp.cardnode.show()
+                    while self.shared.framenum.value + 5 < self.shared.numframes.value:
+                        self.myapp.cardnode.setShaderInput("phi", 2 * np.pi * self.myapp.temporal_frequency * (
+                                self.last_time - self.stim_start_time))
+                        self.myapp.taskMgr.step()
+                        self.last_time = time.time()
+                        if (self.shared.framenum.value +  self.shared.contrast_frameflip_interval.value) % (
+                                2 * self.shared.contrast_frameflip_interval.value) <= 1:
+                            print(self.shared.framenum.value, 'Left moving grating flash ON')
+                            self.myapp.cardnode.setShaderInput("flash_flag", 1)
+                            self.data_to_save.append(
+                                {'framenum': self.shared.framenum.value, 'Flash': 'ON', 'grating_id': 'Left Moving'})
+                            self.myapp.taskMgr.step()
+                        if (self.shared.framenum.value + 2* self.shared.contrast_frameflip_interval.value) % (
+                                2 * self.shared.contrast_frameflip_interval.value) <= 1:
+                            print(self.shared.framenum.value, 'Left moving grating flash OFF')
+                            self.myapp.cardnode.setShaderInput("flash_flag", 0)
+                            self.data_to_save.append(
+                                {'framenum': self.shared.framenum.value, 'Flash': 'OFF', 'grating_id': 'Left Moving'})
+                            self.myapp.taskMgr.step()
+                        # if self.shared.framenum.value % self.shared.contrast_frameflip_interval.value <= 1:
+                        #     print(self.shared.framenum.value, 'Left moving grating flash ON')
+                        #     self.myapp.cardnode.setShaderInput("flash_flag", 1)
+                        #     self.data_to_save.append(
+                        #         {'framenum': self.shared.framenum.value, 'Flash': 'ON', 'grating_id': 'Left Moving'})
+                        #     self.myapp.taskMgr.step()
+                        #     while self.shared.framenum.value-startframe < self.shared.contrast_frameflip_interval.value:
+                        #         self.last_time = time.time()
+                        #         self.myapp.cardnode.setShaderInput("phi", 2 * np.pi * self.myapp.temporal_frequency * (
+                        #         self.last_time - self.stim_start_time))
+                        #         self.myapp.taskMgr.step()
+                        #     print(self.shared.framenum.value, 'Left moving grating flash OFF')
+                        #     self.myapp.cardnode.setShaderInput("flash_flag", 0)
+                        #     self.data_to_save.append(
+                        #         {'framenum': self.shared.framenum.value, 'Flash': 'OFF', 'grating_id': 'Left Moving'})
+                    path_to_file = os.path.join(
+                        bytearray(self.shared.save_path[:self.shared.save_path_len.value]).decode(),
+                        bytearray(self.shared.stim_type[:self.shared.stim_type_len.value]).decode() + '_trial_' + str(
+                            stim_trial_count[13]) + '_cycles_' + str(
+                            self.shared.numcycles.value) + '_freq_' + str(
+                            self.shared.temporalfreq.value) + '_rot_' + str(
+                            self.shared.gratings_angle.value) + '_brightness_' + str(
+                            round(self.shared.gratings_brightness.value, 2)) + '_lowcontrast_' + str(
+                            round(self.shared.low_contrast.value, 2)) + '_highcontrast_' + str(
+                            round(self.shared.high_contrast.value, 2)) + '.p')
+                    pickle.dump(self.data_to_save, open(path_to_file.encode("ISO-8859-1"), 'wb'))
+                    stim_trial_count[13] += 1
+                    self.shared.stim_trial_count[:len(stim_trial_count)] = stim_trial_count.flatten()
+                elif self.stimcode == 'FlashSuppRightGrating':
+                    # this will flash a Right moving grating in the Left eye, while the right eye always sees a left moving grating
+                    self.myapp.cardnode.setShaderInput("stimcode", 13)
+                    self.myapp.cardnode.setShaderInput("flash_flag", 0)
+                    self.data_to_save = []
+                    self.stim_start_time = time.time()
+                    self.last_time = time.time()
+                    self.myapp.cardnode.show()
+                    while self.shared.framenum.value + 5 < self.shared.numframes.value:
+                        self.myapp.cardnode.setShaderInput("phi", 2 * np.pi * self.myapp.temporal_frequency * (
+                                self.last_time - self.stim_start_time))
+                        self.myapp.taskMgr.step()
+                        self.last_time = time.time()
+                        if (self.shared.framenum.value +  self.shared.contrast_frameflip_interval.value) % (
+                                2 * self.shared.contrast_frameflip_interval.value) <= 1:
+                            print(self.shared.framenum.value, 'Right moving grating flash ON')
+                            self.myapp.cardnode.setShaderInput("flash_flag", 1)
+                            self.data_to_save.append(
+                                {'framenum': self.shared.framenum.value, 'Flash': 'ON', 'grating_id': 'Right Moving'})
+                            self.myapp.taskMgr.step()
+                        if (self.shared.framenum.value + 2* self.shared.contrast_frameflip_interval.value) % (
+                                2 * self.shared.contrast_frameflip_interval.value) <= 1:
+                            print(self.shared.framenum.value, 'Right moving grating flash OFF')
+                            self.myapp.cardnode.setShaderInput("flash_flag", 0)
+                            self.data_to_save.append(
+                                {'framenum': self.shared.framenum.value, 'Flash': 'OFF', 'grating_id': 'Right Moving'})
+                            self.myapp.taskMgr.step()
+                        # startframe = self.shared.framenum.value
+                        # if self.shared.framenum.value % self.shared.contrast_frameflip_interval.value <= 1:
+                        #     print(self.shared.framenum.value, 'Right moving grating flash ON')
+                        #     self.myapp.cardnode.setShaderInput("flash_flag", 1)
+                        #     self.data_to_save.append(
+                        #         {'framenum': self.shared.framenum.value, 'Flash': 'ON', 'grating_id': 'Right Moving'})
+                        #     self.myapp.taskMgr.step()
+                        #     while self.shared.framenum.value - startframe < self.shared.contrast_frameflip_interval.value:
+                        #         self.last_time = time.time()
+                        #         self.myapp.cardnode.setShaderInput("phi", 2 * np.pi * self.myapp.temporal_frequency * (
+                        #                 self.last_time - self.stim_start_time))
+                        #         self.myapp.taskMgr.step()
+                        #     print(self.shared.framenum.value, 'Right moving grating flash OFF')
+                        #     self.myapp.cardnode.setShaderInput("flash_flag", 0)
+                        #     self.data_to_save.append(
+                        #         {'framenum': self.shared.framenum.value, 'Flash': 'OFF', 'grating_id': 'Right Moving'})
+                    path_to_file = os.path.join(
+                        bytearray(self.shared.save_path[:self.shared.save_path_len.value]).decode(),
+                        bytearray(self.shared.stim_type[:self.shared.stim_type_len.value]).decode() + '_trial_' + str(
+                            stim_trial_count[14]) + '_cycles_' + str(
+                            self.shared.numcycles.value) + '_freq_' + str(
+                            self.shared.temporalfreq.value) + '_rot_' + str(
+                            self.shared.gratings_angle.value) + '_brightness_' + str(
+                            round(self.shared.gratings_brightness.value, 2)) + '_lowcontrast_' + str(
+                            round(self.shared.low_contrast.value, 2)) + '_highcontrast_' + str(
+                            round(self.shared.high_contrast.value, 2)) + '.p')
+                    pickle.dump(self.data_to_save, open(path_to_file.encode("ISO-8859-1"), 'wb'))
+                    stim_trial_count[14] += 1
                     self.shared.stim_trial_count[:len(stim_trial_count)] = stim_trial_count.flatten()
 
 

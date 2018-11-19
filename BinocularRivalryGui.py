@@ -71,6 +71,13 @@ if __name__ == "__main__":
             self.timer = QtCore.QTimer()
             self.timer.timeout.connect(self.updateData)
             self.timer.start(50)
+            self.stim_dict = {'LeftGrating': 0, 'RightGrating': 1, 'RivalrousLeftRightMovingGrating': 2,
+                         'RivalrousUpDownMovingGrating': 3,
+                         'ContrastCoherent': 4, 'ContrastRivalrousHighandLowFlicker': 5,
+                         'ContrastRivalrousNoFlicker': 6,
+                         'LowContrastFlicker': 7, 'HighContrastFlicker': 8, 'LowContrastCoherent': 9,
+                         'HighContrastCoherent': 10, 'FlashSuppLowFlash': 11, 'FlashSuppHighFlash': 12,
+                         'FlashSuppLeftGrating': 13, 'FlashSuppRightGrating': 14}  # for accessing trial number from shared variable
             # updateData()
             # self.ImageItem.setImage(np.random.randint(0,255,(200,200)), autoLevels=False, levels=(0, 255))
         def filepath_pushButton_clicked(self):
@@ -155,6 +162,7 @@ if __name__ == "__main__":
             frame = np.ctypeslib.as_array(self.shared.frame)[:self.shared.frame_len.value]
             frame1 = np.ctypeslib.as_array(self.shared.frame1)[:self.shared.frame_len.value]
             self.numframes_label.setText("#Frames done: %d"%self.shared.framenum.value)
+            stim_type = bytearray(self.shared.stim_type[:self.shared.stim_type_len.value]).decode()
             if len(frame)>0:
                 frame = frame.reshape((self.shared.frame_height.value,self.shared.frame_width.value)).astype(np.uint8)
                 frame1 = frame1.reshape((self.shared.frame_height.value, self.shared.frame_width.value)).astype(np.uint8)
@@ -163,9 +171,9 @@ if __name__ == "__main__":
                 self.pyqtgraph_image_item.setRect(self.viewRect)
                 self.pyqtgraph_image_item1.setImage(frame1.T, autoLevels=False, autoDownsample=True)
                 self.pyqtgraph_image_item1.setRect(self.viewRect1)
-            self.stim_trial_label.setText('LeftGrating: %d RightGrating: %d Rival_LR: %d Rival_UD: %d ContrCoherent: %d  ContrRivalHigh&LowFlickr: %d ContrRivalNoFlickr: %d LowContrFlickr: %d HighContrFlickr: %d LowContrCoherent: %d HighContrCoherent: %d FlashSuppLow: %d FlashSuppHigh: %d'
-                                          % (stim_trial_count[0]-1, stim_trial_count[1]-1
-                                             , stim_trial_count[2]-1, stim_trial_count[3]-1, stim_trial_count[4]-1, stim_trial_count[5]-1, stim_trial_count[6]-1, stim_trial_count[7]-1, stim_trial_count[8]-1, stim_trial_count[9]-1, stim_trial_count[10]-1, stim_trial_count[11]-1, stim_trial_count[12]-1))
+
+            if len(stim_type)>0:
+                self.stim_trial_label.setText(stim_type + ' ' + str(stim_trial_count[self.stim_dict[stim_type]]-1))
             if self.shared.start_cam.value ==0:
                 self.startStim_pushButton.setStyleSheet('QPushButton{background-color: rgb(43, 255, 39);}')
         #close window
