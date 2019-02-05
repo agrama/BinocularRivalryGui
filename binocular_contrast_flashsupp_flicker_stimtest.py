@@ -43,7 +43,7 @@ my_shader = [
         uniform float high_contrast;
         uniform float mask_radius;
         uniform float pulse;
-        uniform float timer;    // this is to slowly modulate the contrast to 0 instead of flashing OFF
+        uniform float flicker_pulse;
 
 
         void main() {
@@ -59,17 +59,26 @@ my_shader = [
           vec4 color1 = texture(p3d_Texture1, texcoord);
           if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
             if(pulse == 1){
-            gl_FragColor = vec4(timer* low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1))+ gratings_brightness, 0, 1);
+                if (pow((texcoord.x - 0.3)*aspect_ratio,2) + pow((texcoord.y - 0.3),2) < pow(mask_radius/4,2) ){
+                    if(flicker_pulse == 1){
+                        gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1)) + gratings_brightness, 0.1*low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, 0, 1);
+                        }
+                    if(flicker_pulse == 0){
+                        gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1)) + gratings_brightness, low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, 0, 1);
+                        }
+                    }
+                else{
+                        gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1)) + gratings_brightness, low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, 0, 1);
+                    }
             }
             else{
-            gl_FragColor = vec4(gratings_brightness, high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1))+  gratings_brightness, 0, 1);
+                gl_FragColor = vec4( gratings_brightness, low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + gratings_brightness, 0, 1);
             }
           }
           else{
           gl_FragColor = vec4(0,0,0,1);
           }
-          //  low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles + phase2)) + 
-           
+          //  high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 *  cycles + phase1))+
        }
     """
 ]
@@ -89,12 +98,12 @@ class MyApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         self.disableMouse()
-
         self.accept('escape', sys.exit)
         self.accept('a', self.IncreaseMaskRadius)
         self.accept('s', self.DecreaseMaskRadius)
-        self.accept('arrow_down', self.Pulser)
 
+
+        self.accept('arrow_down', self.Pulser)
         x = np.linspace(0, 2 * np.pi, 100)
         y = (np.sign(np.sin(x)) + 1) / 2 * 255
 
@@ -125,7 +134,7 @@ class MyApp(ShowBase):
         self.scale = 1
         self.cycles = 15
         self.gratings_brightness = 0.3
-        self.mask_radius = 0.2
+        self.mask_radius = 0.5
         # self.cardnode.hide()
         self.cardnode.setShaderInput("x_scale", self.scale * 1.56)  # this is the measured aspect ratio of the projector
         self.cardnode.setShaderInput("y_scale", self.scale)
@@ -133,10 +142,11 @@ class MyApp(ShowBase):
         self.cardnode.setShaderInput("rot_angle", 0)
         self.cardnode.setShaderInput("rot_angle_increment", np.deg2rad(45))
         self.cardnode.setShaderInput("gratings_brightness", self.gratings_brightness)
-        self.cardnode.setShaderInput("low_contrast", 0.3)
-        self.cardnode.setShaderInput("high_contrast", 0.9)
+        self.cardnode.setShaderInput("low_contrast", 0.2)
+        self.cardnode.setShaderInput("high_contrast", 1)
         self.cardnode.setShaderInput("stimcode", 1)
         self.cardnode.setShaderInput("mask_radius", self.mask_radius)
+
         self.pulse = 0
         self.pulsetimer = 0
         self.cardnode.setShaderInput('pulse',self.pulse)
@@ -147,16 +157,14 @@ class MyApp(ShowBase):
         self.phase2 = 0
         self.cardnode.setShaderInput('phase1', self.phase1)
         self.cardnode.setShaderInput('phase2', self.phase2)
-        self.timer = 0
-        self.cardnode.setShaderInput('timer', self.timer)
+        self.flicker_pulse = 0
+        self.cardnode.setShaderInput("flicker_pulse", 0)
 
     def Pulser(self):
         print("pulse")
         self.pulse = 1
         self.pulsetimer += 0.0167  # time in ms of a frame
         self.cardnode.setShaderInput("pulse", self.pulse)
-        self.timer = 1
-        self.cardnode.setShaderInput('timer',self.timer)
 
     def IncreaseMaskRadius(self):
         self.mask_radius += 0.02
@@ -169,18 +177,15 @@ class MyApp(ShowBase):
     def frameFlipper(self, task):
         if self.pulsetimer > 0:
             self.pulsetimer += 0.0167
-
-        if 2.25 < self.pulsetimer < 3:
-            timeleft = 3 - self.pulsetimer
-            self.timer = timeleft
-            print(self.timer)
-            if self.timer <0.2:
-                self.timer = 0.001
-            self.cardnode.setShaderInput('timer',self.timer)
-
-        if self.pulsetimer > 3:
-            self.timer = 0.001
-            self.cardnode.setShaderInput('timer',self.timer)
+        if 1 <self.pulsetimer< 1.1:
+            print("flickering", self.flicker_pulse)
+            self.flicker_pulse = abs(self.flicker_pulse - 1)
+            self.cardnode.setShaderInput("flicker_pulse",self.flicker_pulse)
+        if self.pulsetimer > 1.1:
+            self.flicker_pulse = 0
+            self.cardnode.setShaderInput("flicker_pulse", self.flicker_pulse)
+        if self.pulsetimer > 5:
+            self.flicker_pulse = 0
             self.pulsetimer = 0
             self.pulse = 0
             self.cardnode.setShaderInput("pulse", self.pulse)

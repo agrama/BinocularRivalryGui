@@ -108,7 +108,8 @@ class StimulusModule(Process):
                 self.myapp.taskMgr.step()
 
             if self.shared.stim_on.value == 1:
-
+                self.myapp.cardnode.setShaderInput("rot_angle_increment",
+                                                   np.deg2rad(self.shared.gratings_angle.value))
 
                 if self.stimcode == 'LeftGrating':
                     self.myapp.cardnode.setShaderInput("stimcode", 0)
@@ -341,13 +342,23 @@ class StimulusModule(Process):
                     while self.shared.framenum.value + 5 < self.shared.numframes.value:
                         startframe = self.shared.framenum.value
                         if self.shared.framenum.value % self.shared.contrast_frameflip_interval.value <= 1:
+                            self.myapp.cardnode.setShaderInput('timer',1.0)
                             print(self.shared.framenum.value, 'low contrast flash ON')
                             self.myapp.cardnode.setShaderInput("flash_flag",1)
                             self.data_to_save.append({'framenum': self.shared.framenum.value,'Flash': 'ON', 'grating_id': 'low'})
                             self.myapp.taskMgr.step()
-                            while self.shared.framenum.value-startframe < self.shared.contrast_frameflip_interval.value/2:
+                            first_time = time.time()
+
+                            while self.shared.framenum.value-startframe < self.shared.contrast_frameflip_interval.value - 100:      # hardcoding this 120518
+                                second_time = time.time()
                                 self.myapp.cardnode.setShaderInput("flash_flag", 1)
                                 self.myapp.taskMgr.step()
+                                #120918 this is to fade the low contrast grating to grey instead of a flash
+                                if 3.25 < second_time-first_time < 4.0:
+                                    self.myapp.cardnode.setShaderInput('timer',  4.0-(second_time-first_time))
+                                    print( 4.0 - (second_time-first_time))
+
+                            self.myapp.cardnode.setShaderInput('timer', 0.0)
                             print(self.shared.framenum.value, 'low contrast flash OFF')
                             self.myapp.cardnode.setShaderInput("flash_flag", 0)
                             self.data_to_save.append(
@@ -414,25 +425,41 @@ class StimulusModule(Process):
                     self.stim_start_time = time.time()
                     self.last_time = time.time()
                     self.myapp.cardnode.show()
+                    # Faiza comment this
+                    # flash_on_frames = np.arange(1200,90000,1800)
+                    # flash_off_frames = flash_on_frames+ 600
+                    # ticker = 0
+                    #
                     while self.shared.framenum.value + 5 < self.shared.numframes.value:
                         self.myapp.cardnode.setShaderInput("phi", 2 * np.pi * self.myapp.temporal_frequency * (
                                 self.last_time - self.stim_start_time))
                         self.myapp.taskMgr.step()
                         self.last_time = time.time()
+
+                        #Faiza uncomment this
                         if (self.shared.framenum.value +  self.shared.contrast_frameflip_interval.value) % (
                                 2 * self.shared.contrast_frameflip_interval.value) <= 1:
+
+                        # Faiza comment this
+                        #if (self.shared.framenum.value == flash_on_frames[ticker]):
                             print(self.shared.framenum.value, 'Left moving grating flash ON')
                             self.myapp.cardnode.setShaderInput("flash_flag", 1)
                             self.data_to_save.append(
                                 {'framenum': self.shared.framenum.value, 'Flash': 'ON', 'grating_id': 'Left Moving'})
                             self.myapp.taskMgr.step()
+
+                        # Faiza uncomment this
                         if (self.shared.framenum.value + 2* self.shared.contrast_frameflip_interval.value) % (
                                 2 * self.shared.contrast_frameflip_interval.value) <= 1:
+
+                        # Faiza comment this
+                        #if (self.shared.framenum.value == flash_off_frames[ticker]):
                             print(self.shared.framenum.value, 'Left moving grating flash OFF')
                             self.myapp.cardnode.setShaderInput("flash_flag", 0)
                             self.data_to_save.append(
                                 {'framenum': self.shared.framenum.value, 'Flash': 'OFF', 'grating_id': 'Left Moving'})
                             self.myapp.taskMgr.step()
+                            #ticker+=1
                         # if self.shared.framenum.value % self.shared.contrast_frameflip_interval.value <= 1:
                         #     print(self.shared.framenum.value, 'Left moving grating flash ON')
                         #     self.myapp.cardnode.setShaderInput("flash_flag", 1)
@@ -469,6 +496,11 @@ class StimulusModule(Process):
                     self.stim_start_time = time.time()
                     self.last_time = time.time()
                     self.myapp.cardnode.show()
+                    #FAIZAAAA
+                    #flash_on_frames = np.arange(1200, 90000, 1800)
+                    #flash_off_frames = flash_on_frames + 600
+                    #ticker = 0
+
                     while self.shared.framenum.value + 5 < self.shared.numframes.value:
                         self.myapp.cardnode.setShaderInput("phi", 2 * np.pi * self.myapp.temporal_frequency * (
                                 self.last_time - self.stim_start_time))
@@ -476,6 +508,7 @@ class StimulusModule(Process):
                         self.last_time = time.time()
                         if (self.shared.framenum.value +  self.shared.contrast_frameflip_interval.value) % (
                                 2 * self.shared.contrast_frameflip_interval.value) <= 1:
+                        #if (self.shared.framenum.value == flash_on_frames[ticker]):
                             print(self.shared.framenum.value, 'Right moving grating flash ON')
                             self.myapp.cardnode.setShaderInput("flash_flag", 1)
                             self.data_to_save.append(
@@ -483,11 +516,13 @@ class StimulusModule(Process):
                             self.myapp.taskMgr.step()
                         if (self.shared.framenum.value + 2* self.shared.contrast_frameflip_interval.value) % (
                                 2 * self.shared.contrast_frameflip_interval.value) <= 1:
+                        #if (self.shared.framenum.value == flash_off_frames[ticker]):
                             print(self.shared.framenum.value, 'Right moving grating flash OFF')
                             self.myapp.cardnode.setShaderInput("flash_flag", 0)
                             self.data_to_save.append(
                                 {'framenum': self.shared.framenum.value, 'Flash': 'OFF', 'grating_id': 'Right Moving'})
                             self.myapp.taskMgr.step()
+                           # ticker += 1
                         # startframe = self.shared.framenum.value
                         # if self.shared.framenum.value % self.shared.contrast_frameflip_interval.value <= 1:
                         #     print(self.shared.framenum.value, 'Right moving grating flash ON')

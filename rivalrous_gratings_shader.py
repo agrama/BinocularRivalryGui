@@ -46,7 +46,7 @@ my_shader = [
         uniform float phase_high;
         uniform float left_right_flag;
         uniform float flash_flag;
-
+        uniform float timer;
         void main() {
 
         mat2 rotation1 = mat2( cos(rot_angle-rot_angle_increment), sin(rot_angle-rot_angle_increment),
@@ -137,7 +137,7 @@ my_shader = [
             if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
                 if(left_right_flag == 1){
                     if(flash_flag == 1){
-                        gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 * cycles )) + gratings_brightness, low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles )) + gratings_brightness, 0, 1);
+                        gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 * cycles )) + gratings_brightness, timer* low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles )) + gratings_brightness, 0, 1);
                         }
                     else{
                         gl_FragColor = vec4(high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 * cycles )) + gratings_brightness, gratings_brightness, 0, 1);
@@ -145,7 +145,7 @@ my_shader = [
                     }
                 if(left_right_flag == 0){
                     if(flash_flag == 1){
-                        gl_FragColor = vec4(low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles )) + gratings_brightness, high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 * cycles )) + gratings_brightness, 0, 1);
+                        gl_FragColor = vec4(timer* low_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated2.x * 2 * 3.14 * cycles )) + gratings_brightness, high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 * cycles )) + gratings_brightness, 0, 1);
                         }
                     else{
                         gl_FragColor = vec4(gratings_brightness, high_contrast*gratings_brightness*0.5*sign(sin(texcoord_rotated1.x * 2 * 3.14 * cycles )) + gratings_brightness, 0, 1);
@@ -193,10 +193,12 @@ my_shader = [
           if(stimcode == 12){
             if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
                 if(flash_flag == 1){
-                    gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
+                    gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) +gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
+                    // 
                     }
                 else{
                     gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness, 0, 1);
+                    // gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) +
                 }
              }
             else{
@@ -209,9 +211,11 @@ my_shader = [
             if (pow((texcoord.x - 0.5)*aspect_ratio,2) + pow((texcoord.y - 0.5),2) < pow(mask_radius,2) ){
                 if(flash_flag == 1){
                     gl_FragColor = vec4(gratings_brightness*0.5*sign(sin(texcoord_rotated1.x*2*3.14*(cycles) + phi)) + gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
+                    // 
                     }
                 else{
-                    gl_FragColor = vec4(gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) + gratings_brightness, 0, 1);
+                    gl_FragColor = vec4(gratings_brightness, gratings_brightness*0.5*sign(sin(texcoord_rotated2.x*2*3.14*(cycles) - phi)) +gratings_brightness, 0, 1);
+                    //  
                 }
              }
             else{
@@ -297,7 +301,7 @@ class MyApp(ShowBase):
         self.cardnode.setShaderInput("rot_angle", 0)
         self.cardnode.setShaderInput("rot_angle_increment", 0)
         self.cardnode.setShaderInput("stimcode",0)
-        self.cardnode.setShaderInput("gratings_brightness",0.1)
+        self.cardnode.setShaderInput("gratings_brightness",0.4)
         self.cardnode.setShaderInput("low_contrast", 0.1)
         self.cardnode.setShaderInput("high_contrast",0.5)
         self.cardnode.setShaderInput("left_right_flag",1)
@@ -309,7 +313,7 @@ class MyApp(ShowBase):
         self.phase_high = 0
         self.cardnode.setShaderInput("phase_low", self.phase_low)
         self.cardnode.setShaderInput("phase_high", self.phase_high)
-
+        self.cardnode.setShaderInput('timer', 0.0)
         self.setBackgroundColor(self.shared.gratings_brightness.value, self.shared.gratings_brightness.value, 0) # 05/09/18 making change here to put the background color as grating brightness
         self.cardnode.hide()
 
